@@ -1,0 +1,4 @@
+cssselect
+lxml
+praw>=3.5.0
+requests

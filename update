@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+import time
+
+from stripbot.comics import DirkJan, Sigmund, Jeroom
+from stripbot.update import get_new_comics
+from stripbot.reddit import post_comic
+from stripbot.statefile import StateFile
+
+for comic_site in [DirkJan, Sigmund, Jeroom]:
+    statefilename = 'state-%s.json' % comic_site.name.lower().replace(' ', '-')
+    with StateFile(statefilename) as state:
+        posted_ids = set(state.setdefault('posted_ids', []))
+        comics = get_new_comics(comic_site, posted_ids)
+
+        for comic in comics:
+            time.sleep(4)
+            print("posting %s %s" % (comic.post_title, comic.post_url))
+            post_comic(comic)
