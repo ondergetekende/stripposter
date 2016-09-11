@@ -2,6 +2,9 @@ from urllib.parse import urljoin
 
 import requests
 
+from .statefile import StateFile
+from .reddit import post_comic
+
 
 def discover(comic_model):
 
@@ -48,3 +51,18 @@ def get_new_comics(comic_model, posted_ids):
         post_comics = [c for c in comics if c.id not in posted_ids]
 
     return post_comics
+
+
+def post_updates(*comic_sites):
+    for comic_site in comic_sites:
+        statefilename = 'state-%s.json' % comic_site.name.lower().replace(' ', '-')
+        with StateFile(statefilename) as state:
+            posted_ids = set(state.setdefault('posted_ids', []))
+            comics = get_new_comics(comic_site, posted_ids)
+            state['posted_ids'] = sorted(posted_ids)
+
+            for comic in comics:
+                print("posting %s" % (comic))
+                post_comic(comic)
+                posted_ids.add(comic.id)
+                state['posted_ids'] = sorted(posted_ids)
