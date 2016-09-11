@@ -1,40 +1,4 @@
-import datetime
-from urllib.parse import urljoin
-
 import lxml.html
-import requests
-
-
-def update(comic_model):
-
-    session = requests.Session()
-    doc = comic_model.retrieve_index(session)
-
-    #
-    if comic_model.css_selector:
-        instances = doc.cssselect(comic_model.css_selector)
-    else:
-        instances = [doc]
-
-    # Find the comics on the index page
-    results = []
-    for element in instances:
-        result = comic_model(element)
-        result.extract_comic()
-
-        # make sure the paths are absolute
-        if result.image_url:
-            result.image_url = urljoin(comic_model.base_url, result.image_url)
-
-        if result.page_url:
-            result.page_url = urljoin(comic_model.base_url, result.page_url)
-
-        results.append(result)
-
-    return results
-
-    def extract_comic(self, elm):
-        raise NotImplementedError()
 
 
 class BaseComicModel():
@@ -86,3 +50,6 @@ class BaseComicModel():
     @property
     def title(self):
         return self.date.strftime("%d/%m/%Y")
+
+    def __str__(self):
+        return "#%s %s" % (self.id, self.image_url or self.page_url)
