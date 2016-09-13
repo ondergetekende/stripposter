@@ -20,6 +20,7 @@ class BaseComicModel():
 
     def __init__(self, element):
         self._id = None
+        self._title = None
         self.page_url = None
         self.image_url = None
         self.date = None
@@ -50,7 +51,14 @@ class BaseComicModel():
 
     @property
     def title(self):
+        if self._title:
+            return self._title
+
         return (self.date or datetime.datetime.now()).strftime("%d/%m/%Y")
+
+    @title.setter
+    def title(self, value):
+        self._title = value
 
     def __str__(self):
         return "#%s %s" % (self.id, self.image_url or self.page_url)
