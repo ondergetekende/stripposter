@@ -18,29 +18,16 @@ class DirkJan(BaseComicModel):
 
 
 class Sigmund(BaseComicModel):
-    base_url = "http://www.sigmund.nl/"
+    base_url = "http://www.volkskrant.nl/foto/sigmund-2~p4368403/"
     name = "Sigmund"
     author = "Peter de Wit"
 
-    css_selector = 'img[src^="strips/sig1"]'
+    css_selector = '.photo-set__list figure'
 
     def extract_comic(self):
-        self.image_url = self.element.get('src')
-        self.id = self.image_url.split("/sig")[-1].rsplit('.')[0]
-        self.date = datetime.datetime.strptime(self.id, "%y%m%d")
-        self.page_url = ("http://www.sigmund.nl/?d=%s" %
-                         self.date.isoweekday())
-
-    @property
-    def post_url(self):
-        return self.image_url
-
-    @property
-    def post_comment(self):
-        return ("[Hier](%s) staat de pagina met de strip. Omdat "
-                "[sigmund](http://sigmund.nl) geen archief heeft, linkt de "
-                "post naar het image plaatje, zodat deze reddit post over "
-                "een week nog ergens naar linkt." % self.page_url)
+        self.page_url = self.element.cssselect('a')[0].get('href')
+        self.image_url = self.element.get('data-hires')
+        self.id = self.element.get('data-pid')
 
 
 class Jeroom(BaseComicModel):

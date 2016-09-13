@@ -1,3 +1,4 @@
+import datetime
 import lxml.html
 
 
@@ -49,7 +50,7 @@ class BaseComicModel():
 
     @property
     def title(self):
-        return self.date.strftime("%d/%m/%Y")
+        return (self.date or datetime.datetime.now()).strftime("%d/%m/%Y")
 
     def __str__(self):
         return "#%s %s" % (self.id, self.image_url or self.page_url)

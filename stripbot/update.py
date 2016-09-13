@@ -52,7 +52,9 @@ def get_new_comics(comic_model, posted_ids):
         post_comics = [c for c in comics if c.id not in posted_ids]
 
         # Don't post comics dated in the future
-        post_comics = [c for c in comics if c.date <= datetime.datetime.now()]
+        post_comics = [c for c in post_comics
+                       if (c.date == None or
+                           c.date <= datetime.datetime.now())]
 
     return post_comics
 
@@ -64,7 +66,6 @@ def post_updates(*comic_sites):
             posted_ids = set(state.setdefault('posted_ids', []))
             comics = get_new_comics(comic_site, posted_ids)
             state['posted_ids'] = sorted(posted_ids)
-
             for comic in comics:
                 print("posting %s" % (comic))
                 post_comic(comic)
