@@ -33,7 +33,8 @@ def post_comic(comic):
 
     try:
         reddit_post = api.submit(subreddit, comic.post_title,
-                                 url=comic.post_url)
+                                 url=comic.post_url,
+                                 send_replies=False)
         comment = comic.post_comment
         if comment:
             comment = comment.rstrip() + "\n\n"
