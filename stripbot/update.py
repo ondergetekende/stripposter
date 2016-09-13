@@ -1,3 +1,4 @@
+import datetime
 from urllib.parse import urljoin
 
 import requests
@@ -49,6 +50,9 @@ def get_new_comics(comic_model, posted_ids):
     else:
         # Filter out the ones we've already seen
         post_comics = [c for c in comics if c.id not in posted_ids]
+
+        # Don't post comics dated in the future
+        post_comics = [c for c in comics if c.date <= datetime.datetime.now()]
 
     return post_comics
 
