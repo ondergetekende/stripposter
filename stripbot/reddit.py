@@ -16,9 +16,8 @@ def get_reddit():
     app_secret = os.environ["STRIPPOSTER_SECRET"]
     app_refresh = os.environ["STRIPPOSTER_REFRESH"]
 
-    api = praw.Reddit(app_ua)
-    api.set_oauth_app_info(app_id, app_secret, app_uri)
-    api.refresh_access_information(app_refresh)
+    api = praw.Reddit(client_id=app_id, client_secret=app_secret, user_agent=app_ua,
+                           refresh_token=app_refresh)
 
     get_reddit.singleton = api
     return get_reddit.singleton
@@ -31,10 +30,16 @@ def post_comic(comic):
     subreddit = os.environ.get('STRIPPOSTER_SUBREDDIT',
                                '/r/testingground4bots')
 
+    if subreddit.startswith('/r/'):
+        subreddit = subreddit[3:]
+
+    subreddit = api.subreddit(subreddit)
+
     try:
-        reddit_post = api.submit(subreddit, comic.post_title,
-                                 url=comic.post_url,
-                                 send_replies=False)
+        reddit_post = subreddit.submit(comic.post_title,
+                                       url=comic.post_url,
+                                       resubmit=True,
+                                       send_replies=False)
         comment = comic.post_comment
         if comment:
             comment = comment.rstrip() + "\n\n"
@@ -46,6 +51,6 @@ def post_comic(comic):
             "[issue](https://github.com/ondergetekende/stripposter/issues) "
             "aan. Ik word beheerd door /u/kvdveer")
 
-        reddit_post.add_comment(comment)
+        reddit_post.reply(comment)
     except praw.errors.AlreadySubmitted:
         pass
