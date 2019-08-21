@@ -31,6 +31,21 @@ class Sigmund(BaseComicModel):
         self.id = self.element.get('data-pid')
 
 
+class Dingemans(BaseComicModel):
+    base_url = "https://www.trouw.nl/cartoons/de-wereld-van-anton-dingeman~b21b94dc/"
+    name = "Anton Dingeman"
+    author = "Pieter Geenen"
+
+    css_selector = 'article.artstyle section'
+
+    def extract_comic(self):
+        self.page_url = self.base_url
+        date = self.element.cssselect('h3.title')
+        self.id = date
+        self.date = datetime.datetime.strptime(date, "%d %B %Y") # 21 augustus 2019
+        self.image_url = self.element.cssselect('figure img')[0].get('href')
+
+
 class Jeroom(BaseComicModel):
     base_url = "http://www.humo.be/jeroom/"
     name = "Jeroom"
